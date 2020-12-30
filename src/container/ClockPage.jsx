@@ -48,16 +48,29 @@ function ClockPage({ gameStatus, setGameStatus }) {
     return setPlayers(newPlayersInfo);
   }
 
-  function setTimer(event) {
-    let newTime = event.target.value * 60;
-    if (event.target.value >= 1) {
-      let newPlayersInfo = players.map((player) => {
+  function setTimer(event, customTime) {
+    if(!customTime){
+        let newTimeArray = event.target.innerHTML.split(':')
+        let minutes = newTimeArray[0]
+        let seconds = newTimeArray[1]
+
+        let newTime = (minutes * 60) + parseInt(seconds)
+        return updatePlayersTimer(newTime)
+    } else {
+        let newTime = event.target.value * 60;
+        if (event.target.value >= 1) {
+            return updatePlayersTimer(newTime)
+        }
+    }
+  }
+
+  function updatePlayersTimer(newTime){
+    let newPlayersInfo = players.map((player) => {
         player.timer = newTime;
         return player;
       });
       return setPlayers(newPlayersInfo);
-    }
-  }
+}
 
   function reversePlayers() {
     return setPlayers([...players.reverse()]);
