@@ -18,9 +18,10 @@ function ClockPage({ gameStatus, setGameStatus }) {
   ]);
 
   function changePlayerStatus(color) {
-    console.log("entered");
+    if (gameStatus === "STARTED") setGameStatus("PLAYING")
     let newPlayersInfo = players.map((player) => {
-      if (color === player.color) {
+      // As chessclock are inverted (Playing white, pressing your button start black countdown), we check the opposite color.
+      if (color !== player.color) {
         player.status = "PLAYING";
         return player;
       } else {
@@ -32,7 +33,6 @@ function ClockPage({ gameStatus, setGameStatus }) {
   }
 
   function updateTimer() {
-    console.log("in");
     let newPlayersInfo = players.map((player) => {
       if (player.status === "PLAYING" && player.timer > 0) {
         player.timer -= 1;
@@ -45,44 +45,53 @@ function ClockPage({ gameStatus, setGameStatus }) {
         return player;
       }
     });
+
     return setPlayers(newPlayersInfo);
   }
 
   function setTimer(event, customTime) {
-    if(!customTime){
-        let newTimeArray = event.target.innerHTML.split(':')
-        let minutes = newTimeArray[0]
-        let seconds = newTimeArray[1]
+    if (!customTime) {
+      let newTimeArray = event.target.innerHTML.split(":");
+      let minutes = newTimeArray[0];
+      let seconds = newTimeArray[1];
 
-        let newTime = (minutes * 60) + parseInt(seconds)
-        return updatePlayersTimer(newTime)
+      let newTime = minutes * 60 + parseInt(seconds);
+      return updatePlayersTimer(newTime);
     } else {
-        let newTime = event.target.value * 60;
-        if (event.target.value >= 1) {
-            return updatePlayersTimer(newTime)
-        }
+      let newTime = event.target.value * 60;
+      if (event.target.value >= 1) {
+        return updatePlayersTimer(newTime);
+      }
     }
   }
 
-  function updatePlayersTimer(newTime){
+  function updatePlayersTimer(newTime) {
+    if (newTime > (120*60)) newTime = (120*60)
     let newPlayersInfo = players.map((player) => {
-        player.timer = newTime;
-        return player;
-      });
-      return setPlayers(newPlayersInfo);
-}
+      player.timer = newTime;
+      return player;
+    });
+    return setPlayers(newPlayersInfo);
+  }
 
   function reversePlayers() {
     return setPlayers([...players.reverse()]);
   }
 
   useInterval(() => {
-    if (gameStatus === "STARTED") {
+    if (gameStatus === "PLAYING") {
       updateTimer();
     }
   }, 1000);
 
-  return (
+  return gameStatus === "STANDBY" ? (
+    <TimerForm
+      setTimer={setTimer}
+      timer={players[0].timer}
+      gameStatus={gameStatus}
+      setGameStatus={setGameStatus}
+    />
+  ) : (
     <div>
       {players.map((player, i) => {
         return (
@@ -96,8 +105,13 @@ function ClockPage({ gameStatus, setGameStatus }) {
           </section>
         );
       })}
-      <button onClick={() => reversePlayers()}>Inverser</button>
-      <TimerForm setTimer={setTimer} timer={players[0].timer} />
+      {gameStatus === "STARTED" &&
+        <>
+          <button onClick={() => reversePlayers()}>Inverser le côté</button>
+          <p>Appuyer sur noir pour démarrer la pendule. Appuyer sur votre couleur une fois votre coup joué pour démarrer la pendule adverse</p>
+          <p>Le joueur dont le compteur tombe à zéro perd la partie.</p>
+        </>
+      }
     </div>
   );
 }
