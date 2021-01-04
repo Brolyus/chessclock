@@ -6,7 +6,7 @@ import useInterval from "../functions/useInterval.js";
 function ClockPage({ gameStatus, setGameStatus }) {
   const [players, setPlayers] = useState([
     {
-      status: "PLAYING",
+      status: "STANDBY",
       timer: 300,
       color: "Blancs",
     },
@@ -18,7 +18,7 @@ function ClockPage({ gameStatus, setGameStatus }) {
   ]);
 
   function changePlayerStatus(color) {
-    if (gameStatus === "STARTED") setGameStatus("PLAYING")
+    if (gameStatus === "STARTED") setGameStatus("PLAYING");
     let newPlayersInfo = players.map((player) => {
       // As chessclock are inverted (Playing white, pressing your button start black countdown), we check the opposite color.
       if (color !== player.color) {
@@ -37,6 +37,7 @@ function ClockPage({ gameStatus, setGameStatus }) {
       if (player.status === "PLAYING" && player.timer > 0) {
         player.timer -= 1;
         if (player.timer === 0) {
+          player.status = "STANDBY"
           setGameStatus("FINISHED");
           return player;
         }
@@ -50,23 +51,23 @@ function ClockPage({ gameStatus, setGameStatus }) {
   }
 
   function setTimer(event, customTime) {
-    if (!customTime) {
+    if (customTime) {
+      let newTime = event.target.value * 60;
+      if (event.target.value >= 1) {
+        return updatePlayersTimer(newTime);
+      }
+    } else {
       let newTimeArray = event.target.innerHTML.split(":");
       let minutes = newTimeArray[0];
       let seconds = newTimeArray[1];
 
       let newTime = minutes * 60 + parseInt(seconds);
       return updatePlayersTimer(newTime);
-    } else {
-      let newTime = event.target.value * 60;
-      if (event.target.value >= 1) {
-        return updatePlayersTimer(newTime);
-      }
     }
   }
 
   function updatePlayersTimer(newTime) {
-    if (newTime > (120*60)) newTime = (120*60)
+    if (newTime > 120 * 60) newTime = 120 * 60;
     let newPlayersInfo = players.map((player) => {
       player.timer = newTime;
       return player;
@@ -105,12 +106,18 @@ function ClockPage({ gameStatus, setGameStatus }) {
           </section>
         );
       })}
-      {gameStatus === "STARTED" &&
+      {gameStatus === "STARTED" && (
         <>
-          <button onClick={() => reversePlayers()}>Inverser le côté</button>
-          <p>Appuyer sur noir pour démarrer la pendule. Appuyer sur votre couleur une fois votre coup joué pour démarrer la pendule adverse</p>
+          <button onClick={() => reversePlayers()}>Inverser les côtés</button>
+          <p>
+            Appuyer sur noir pour démarrer la pendule. Appuyer sur votre couleur
+            une fois votre coup joué pour démarrer la pendule adverse
+          </p>
           <p>Le joueur dont le compteur tombe à zéro perd la partie.</p>
         </>
+      )}
+      {gameStatus === "FINISHED" &&
+      <p>C'est fini</p>
       }
     </div>
   );

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import ClockPage from "./container/Main.jsx";
+import Main from "./container/Main.jsx";
 import "./App.css";
 
 function App() {
@@ -13,7 +13,7 @@ function App() {
   return (
     <div className="App">
       <h1>Horloge pour jouer aux échecs!</h1>
-      <ClockPage gameStatus={gameStatus} setGameStatus={setGameStatus} />
+      <Main gameStatus={gameStatus} setGameStatus={setGameStatus} />
     </div>
   );
 }
