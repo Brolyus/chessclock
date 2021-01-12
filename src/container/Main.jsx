@@ -2,6 +2,7 @@ import { useState } from "react";
 import Clock from "../components/Clock.jsx";
 import TimerForm from "../components/TimerForm.jsx";
 import useInterval from "../functions/useInterval.js";
+import Nav from "../components/Nav";
 
 function ClockPage({ gameStatus, setGameStatus }) {
   const [players, setPlayers] = useState([
@@ -16,6 +17,10 @@ function ClockPage({ gameStatus, setGameStatus }) {
       color: "Noirs",
     },
   ]);
+
+  const [looser, setLooser] = useState("");
+
+  const [gameDuration, setGameDuration] = useState();
 
   function changePlayerStatus(color) {
     if (gameStatus === "STARTED") setGameStatus("PLAYING");
@@ -37,7 +42,8 @@ function ClockPage({ gameStatus, setGameStatus }) {
       if (player.status === "PLAYING" && player.timer > 0) {
         player.timer -= 1;
         if (player.timer === 0) {
-          player.status = "STANDBY"
+          player.status = "STANDBY";
+          setLooser(player.color);
           setGameStatus("FINISHED");
           return player;
         }
@@ -54,6 +60,7 @@ function ClockPage({ gameStatus, setGameStatus }) {
     if (customTime) {
       let newTime = event.target.value * 60;
       if (event.target.value >= 1) {
+        setGameDuration(newTime);
         return updatePlayersTimer(newTime);
       }
     } else {
@@ -62,8 +69,36 @@ function ClockPage({ gameStatus, setGameStatus }) {
       let seconds = newTimeArray[1];
 
       let newTime = minutes * 60 + parseInt(seconds);
+      setGameDuration(newTime);
       return updatePlayersTimer(newTime);
     }
+  }
+
+//Start a game with previous game duration, and we invert white and black, as players should invert colors after each games.
+  function restartGame() {
+    setGameStatus("STARTED");
+    let newPlayersInfo = players.map((player) => {
+      player.timer = gameDuration;
+      return player;
+    });
+    setPlayers(newPlayersInfo);
+    return reversePlayers();
+  }
+//We prepare to launch a new game with default options
+  function launchNewGame() {
+    setPlayers([
+      {
+        status: "STANDBY",
+        timer: 300,
+        color: "Blancs",
+      },
+      {
+        status: "STANDBY",
+        timer: 300,
+        color: "Noirs",
+      },
+    ])
+    return setGameStatus('STANDBY')
   }
 
   function updatePlayersTimer(newTime) {
@@ -75,7 +110,12 @@ function ClockPage({ gameStatus, setGameStatus }) {
     return setPlayers(newPlayersInfo);
   }
 
+  function pauseTimer() {
+    return players.map((player) => (player.status = "STANDBY"));
+  }
+
   function reversePlayers() {
+    console.log("ici");
     return setPlayers([...players.reverse()]);
   }
 
@@ -94,16 +134,21 @@ function ClockPage({ gameStatus, setGameStatus }) {
     />
   ) : (
     <div>
+      <Nav
+        pauseTimer={() => pauseTimer()}
+        setGameStatus={setGameStatus}
+        restartGame={() => restartGame()}
+      />
       {players.map((player, i) => {
         return (
-          <section key={i} onClick={() => changePlayerStatus(player.color)}>
+          <button key={i} onClick={() => changePlayerStatus(player.color)} className={player.status === "PLAYING" && 'pushed'}>
             <p>Joueur: {player.color}</p>
             <Clock
               timer={player.timer}
               color={player.color}
               status={player.status}
             />
-          </section>
+          </button>
         );
       })}
       {gameStatus === "STARTED" && (
@@ -116,9 +161,13 @@ function ClockPage({ gameStatus, setGameStatus }) {
           <p>Le joueur dont le compteur tombe à zéro perd la partie.</p>
         </>
       )}
-      {gameStatus === "FINISHED" &&
-      <p>C'est fini</p>
-      }
+      {gameStatus === "FINISHED" && (
+        <section>
+          <p>C'est fini{looser && `, ${looser} perd au temps`}!</p>
+          <button onClick={() =>restartGame()}>Relancer une partie avec la même cadence</button>
+          <button onClick={() =>launchNewGame()}>Relancer une partie avec une nouvelle cadence</button>
+        </section>
+      )}
     </div>
   );
 }
