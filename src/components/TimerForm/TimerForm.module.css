@@ -1,0 +1,22 @@
+.gameDuration{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;    
+}
+
+.gameDuration ul{
+    display: flex;
+    list-style: none;
+   justify-content: left;
+   margin: 30px 60px;
+   flex-wrap: wrap;
+}
+
+.duration{
+    color: white;
+    background-color: rgb(78, 48, 48);
+    min-width: 60px;
+    border:  2px solid white;
+    margin: 5px;
+    padding: 5px;
+}

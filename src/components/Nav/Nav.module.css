@@ -1,0 +1,10 @@
+.listEl{
+    list-style: none;
+    margin: 5px;
+}
+
+.iconNav{
+    display: flex;
+    padding: 10px;
+    margin: auto;
+}

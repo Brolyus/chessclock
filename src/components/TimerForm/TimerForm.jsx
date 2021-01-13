@@ -1,12 +1,14 @@
+import classes from './TimerForm.module.css'
+
 function TimerForm({ setTimer, timer, setGameStatus }) {
-  const classicTimers = ["1:00", "3:00", "5:00", "15:00", "60:00", "120:00"];
+  const classicTimers = ["1:00", "3:00", "5:00","10:00", "15:00", "30:00", "45:00", "60:00", "120:00"];
   return (
-    <section>
+    <section className={classes.gameDuration}>
       <h3>Durée de la partie:</h3>
       <ul>
         {classicTimers.map((time, i) => {
           return (
-            <li onClick={setTimer} key={i}>
+            <li className={classes.duration} onClick={setTimer} key={i}>
               {time}
             </li>
           );

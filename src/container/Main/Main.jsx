@@ -1,8 +1,9 @@
 import { useState } from "react";
-import Clock from "../components/Clock.jsx";
-import TimerForm from "../components/TimerForm.jsx";
-import useInterval from "../functions/useInterval.js";
-import Nav from "../components/Nav";
+import Clock from "../../components/Clock/Clock.jsx";
+import TimerForm from "../../components/TimerForm/TimerForm.jsx";
+import useInterval from "../../functions/useInterval.js";
+import Nav from "../../components/Nav/Nav.jsx";
+import classes from './Main.module.css'
 
 function ClockPage({ gameStatus, setGameStatus }) {
   const [players, setPlayers] = useState([
@@ -115,7 +116,6 @@ function ClockPage({ gameStatus, setGameStatus }) {
   }
 
   function reversePlayers() {
-    console.log("ici");
     return setPlayers([...players.reverse()]);
   }
 
@@ -133,7 +133,7 @@ function ClockPage({ gameStatus, setGameStatus }) {
       setGameStatus={setGameStatus}
     />
   ) : (
-    <div>
+    <div className={classes.gameZone}>
       <Nav
         pauseTimer={() => pauseTimer()}
         setGameStatus={setGameStatus}

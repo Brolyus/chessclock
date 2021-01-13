@@ -1,5 +1,5 @@
 import { useState } from "react";
-import Main from "./container/Main.jsx";
+import Main from "./container/Main/Main.jsx";
 import "./App.css";
 
 function App() {
@@ -12,7 +12,7 @@ function App() {
 
   return (
     <div className="App">
-      <h1>Horloge pour jouer aux échecs!</h1>
+      {gameStatus === "STANDBY" && <h1>Horloge pour jouer aux échecs!</h1>}
       <Main gameStatus={gameStatus} setGameStatus={setGameStatus} />
     </div>
   );
