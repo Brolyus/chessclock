@@ -15,7 +15,7 @@ function TimerForm({ setTimer, timer, setGameStatus }) {
         })}
       </ul>
       <form>
-        <label>
+        <label className={classes.durationSetter}>
           Cadence sélectionnée (en minutes):
           <input
             type="number"

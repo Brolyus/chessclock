@@ -60,7 +60,7 @@ function ClockPage({ gameStatus, setGameStatus }) {
   function setTimer(event, customTime) {
     if (customTime) {
       let newTime = event.target.value * 60;
-      if (event.target.value >= 1) {
+      if (event.target.value >= 0) {
         setGameDuration(newTime);
         return updatePlayersTimer(newTime);
       }
